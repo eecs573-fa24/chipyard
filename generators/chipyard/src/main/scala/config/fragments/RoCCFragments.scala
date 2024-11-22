@@ -44,6 +44,13 @@ class WithMultiRoCCGemmini[T <: Data : Arithmetic, U <: Data, V <: Data](
   }
 })
 
+class WithCAMRoCC(op: OpcodeSet = OpcodeSet.custom1) extends Config((site, here, up) => {
+  case BuildRoCC => up(BuildRoCC) ++ Seq((p: Parameters) => {
+    val cam = LazyModule(new CAMAccelerator(op)(p))
+    cam
+  })
+})
+
 class WithAccumulatorRoCC(op: OpcodeSet = OpcodeSet.custom0) extends Config((site, here, up) => {
   case BuildRoCC => up(BuildRoCC) ++ Seq((p: Parameters) => {
     val accumulator = LazyModule(new AccumulatorExample(op, n = 4)(p))

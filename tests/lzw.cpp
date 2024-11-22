@@ -9,25 +9,25 @@ using namespace std;
     Reset
 */
 
-static inline void CAM_lookup(char* input, int lenInput, __)
+static inline uint64_t CAM_lookup(char* input, int lenInput)
 {
 	// ROCC_INSTRUCTION_SS(0, data, idx, 0);
 }
 
-static inline unsigned long CAM_lookup_and_write(int idx)
+static inline uint64_t CAM_lookup_and_write(char* input, int lenInput)
 {
 	// unsigned long value;
 	// ROCC_INSTRUCTION_DSS(0, value, 0, idx, 1);
 	// return value;
 }
 
-static inline void CAM_write(int idx, void *ptr)
+static inline void CAM_write(int input, uint64_t value)
 {
 	// asm volatile ("fence");
 	// ROCC_INSTRUCTION_SS(0, (uintptr_t) ptr, idx, 2);
 }
 
-static inline void CAM_reset(int idx, unsigned long addend)
+static inline int CAM_reset()
 {
 	// ROCC_INSTRUCTION_SS(0, addend, idx, 3);
 }

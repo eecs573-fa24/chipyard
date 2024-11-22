@@ -5,6 +5,7 @@ using namespace std;
 extern "C" void *__dso_handle = 0;
 
 int main() {
+  return 0;
   cout << "Hello World!";
   return 0;
 }
