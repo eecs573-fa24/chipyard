@@ -87,8 +87,8 @@ add_executable(gcd gcd.c)
 add_executable(hello hello.c)
 add_executable(mt-hello mt-hello.c)
 add_executable(symmetric symmetric.c)
-add_executable(lzw lzw.c input.o)
-add_executable(lzw-rocc lzw_rocc.c input.o)
+add_executable(lzw lzw.c)
+add_executable(lzw-rocc lzw_rocc.c)
 
 #################################
 # Disassembly
