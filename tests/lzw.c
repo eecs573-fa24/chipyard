@@ -3,6 +3,20 @@
 #include <string.h>
 #include <stdint.h>
 
+
+extern char _end;          // End of statically allocated memory
+extern char __heap_end;    // Defined in the linker script
+
+void print_heap_info() {
+    uintptr_t heap_start = (uintptr_t)&_end;
+    uintptr_t heap_end = (uintptr_t)&__heap_end;
+    uintptr_t heap_size = heap_end - heap_start;
+
+    printf("Heap start: 0x%08lx\n", heap_start);
+    printf("Heap end:   0x%08lx\n", heap_end);
+    printf("Heap size:  %lu bytes\n", heap_size);
+}
+
 /* ----------- LZW stuff -------------- */
 typedef uint8_t byte;
 typedef uint16_t ushort;
@@ -21,6 +35,7 @@ typedef struct {
     byte c;
 } lzw_dec_t;
 
+/* ----------- LZW Encoding Function -------------- */
 byte* lzw_encode(byte *in, int len, int max_bits, int *out_len) {
     int bits = 9;
     int next_shift = 512;
@@ -254,6 +269,9 @@ byte* lzw_decode(byte *in, int len, int *out_len) {
 }
 
 int main() {
+
+    print_heap_info();
+
     size_t i;
 	char *input = "LZW319274";
     int in_len = strlen(input);
