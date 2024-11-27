@@ -16,6 +16,8 @@ void print_heap_info() {
     printf("Heap end:   0x%08lx\n", heap_end);
     printf("Heap size:  %lu bytes\n", heap_size);
 
+}
+
 /* ----------- CAM Functions -------------- */
 static inline uint64_t CAM_lookup(char* input, int lenInput)
 {
