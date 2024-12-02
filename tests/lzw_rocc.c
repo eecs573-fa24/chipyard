@@ -15,6 +15,7 @@ void print_heap_info() {
     printf("Heap start: 0x%08lx\n", heap_start);
     printf("Heap end:   0x%08lx\n", heap_end);
     printf("Heap size:  %lu bytes\n", heap_size);
+}
 
 /* ----------- CAM Functions -------------- */
 static inline uint64_t CAM_lookup(char* input, int lenInput)
@@ -22,11 +23,11 @@ static inline uint64_t CAM_lookup(char* input, int lenInput)
     // Implement the CAM lookup operation using custom instructions
 }
 
-static inline uint64_t CAM_lookup_and_write(uint64_t p, uint64_t c)
+static inline uint16_t CAM_lookup_and_write(uint16_t p, uint16_t c)
 {
     asm volatile ("fence");
-    uint64_t value;
-    ROCC_INSTRUCTION_DSS(0, value, p, c, 1);
+    uint16_t value;
+    ROCC_INSTRUCTION_DSS(1, value, p, c, 0);
     return value;
 }
 
@@ -37,7 +38,7 @@ static inline void CAM_write(int input, uint64_t value)
 
 static inline void CAM_reset()
 {
-    ROCC_INSTRUCTION(0, 3);
+    ROCC_INSTRUCTION(1, 1);
 }
 
 /* ----------- LZW stuff -------------- */
@@ -69,18 +70,18 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
 
     /* Initialize encoding dictionary */
     int dict_size = 4096;
-    lzw_enc_t *d = calloc(dict_size, sizeof(lzw_enc_t));
-    if (!d) {
-        fprintf(stderr, "Failed to allocate encoding dictionary\n");
-        return NULL;
-    }
+    // lzw_enc_t *d = calloc(dict_size, sizeof(lzw_enc_t));
+    // if (!d) {
+    //     fprintf(stderr, "Failed to allocate encoding dictionary\n");
+    //     return NULL;
+    // }
 
     /* Initialize output buffer */
     int out_size = 512;
     byte *out = malloc(out_size * sizeof(byte));
     if (!out) {
         fprintf(stderr, "Failed to allocate output buffer\n");
-        free(d);
+        // free(d);
         return NULL;
     }
     int out_len_internal = 0, o_bits = 0;
@@ -96,7 +97,7 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
                 out = realloc(out, out_size * sizeof(byte));
                 if (!out) {
                     fprintf(stderr, "Failed to reallocate output buffer\n");
-                    free(d);
+                    // free(d);
                     exit(1);
                 }
             }
@@ -107,7 +108,7 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
 
     /* Start LZW encoding */
     if (len <= 0) {
-        free(d);
+        // free(d);
         free(out);
         return NULL;
     }
@@ -116,13 +117,14 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
 
     while (len--) {
         c = *(in++);
-        output = (ushort)CAM_lookup_and_write((uint64_t)code, (uint64_t)c);
+        printf("Lookup: code: %c, c: %c\n", code, c);
+        output = CAM_lookup_and_write(code, c);
 
-        if (output == next_code) {
+        if (output == next_code) {  // code+c not in table
             write_bits(code);
             next_code++;
             code = c;
-        } else {
+        } else {                    // code+c in table
             code = output;
         }
 
@@ -132,7 +134,7 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
             bits = 12;
             next_shift = 4096;
             next_code = M_NEW;
-            memset(d, 0, dict_size * sizeof(lzw_enc_t));
+            // memset(d, 0, dict_size * sizeof(lzw_enc_t));
             CAM_reset();
         }
     }
@@ -145,14 +147,14 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
             out = realloc(out, out_size * sizeof(byte));
             if (!out) {
                 fprintf(stderr, "Failed to reallocate output buffer\n");
-                free(d);
+                // free(d);
                 return NULL;
             }
         }
         out[out_len_internal++] = (tmp << (8 - o_bits)) & 0xFF;
     }
 
-    free(d);
+    // free(d);
 
     out = realloc(out, out_len_internal * sizeof(byte));
     if (!out) {

@@ -128,6 +128,7 @@ add_dump_target(hello)
 add_dump_target(mt-hello)
 add_dump_target(symmetric)
 add_dump_target(lzw)
+add_dump_target(lzw-rocc)
 
 
 # Add custom command to generate spiflash.img from spiflash.py

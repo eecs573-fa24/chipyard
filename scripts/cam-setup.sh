@@ -5,7 +5,7 @@ set -e
 
 ############################################
 # Copy Chisel CAM Module
-cp cam-dependents/CAMRoCC.scala ../generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala
+# cp cam-dependents/CAMRoCC.scala ../generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala
 ############################################
 
 
@@ -29,7 +29,7 @@ make -j$(nproc) CONFIG=CamRoCCConfig verilog
 # Inserting CAM Module
 cd ../../scripts/cam-dependents
 cp RocketTile.sv ../../sims/verilator/generated-src/chipyard.harness.TestHarness.CamRoCCConfig/gen-collateral/RocketTile.sv
-read -p "Check if SV file was changed!!! Press enter to continue"
+# read -p "Check if SV file was changed!!! Press enter to continue"
 ############################################
 
 
