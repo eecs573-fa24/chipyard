@@ -189,7 +189,7 @@ byte* lzw_decode(byte *in, int len, int *out_len)
         out[out_len_internal++] = c;
     }
 
-    int dict_size = 512;
+    int dict_size = 4096;
     lzw_dec_t *d = malloc(dict_size * sizeof(lzw_dec_t));
     if (!d) {
         fprintf(stderr, "Failed to allocate decoding dictionary\n");
@@ -197,7 +197,7 @@ byte* lzw_decode(byte *in, int len, int *out_len)
         return NULL;
     }
 
-    int j, next_shift = 512, bits = 9, n_bits = 0;
+    int j, next_shift = 4096, bits = 12, n_bits = 0;
     ushort code, c, t, next_code = M_NEW;
 
     uint32_t tmp = 0;
@@ -219,10 +219,10 @@ byte* lzw_decode(byte *in, int len, int *out_len)
 
     void clear_table() {
         memset(d, 0, dict_size * sizeof(lzw_dec_t));
-        for (j = 0; j < 256; j++) d[j].c = j;
+        for (j = 0; j < 4096; j++) d[j].c = j;
         next_code = M_NEW;
-        next_shift = 512;
-        bits = 9;
+        next_shift = 4096;
+        bits = 12;
     };
 
     clear_table();
