@@ -198,8 +198,9 @@ byte* lzw_decode(byte *in, int len, int *out_len) {
 
     void clear_table() {
         memset(d, 0, dict_size * sizeof(lzw_dec_t));
-        for (j = 0; j < 256; j++)
+        for (j = 0; j < 256; j++){
             d[j].c = j;
+        }
         next_code = M_NEW;
         next_shift = 512;
         bits = 9;

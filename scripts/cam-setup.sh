@@ -5,7 +5,7 @@ set -e
 
 ############################################
 # Copy Chisel CAM Module
-# cp cam-dependents/CAMRoCC.scala ../generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala
+cp cam-dependents/CAMRoCC.scala ../generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala
 ############################################
 
 

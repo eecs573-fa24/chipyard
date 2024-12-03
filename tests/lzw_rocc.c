@@ -219,8 +219,8 @@ byte* lzw_decode(byte *in, int len, int *out_len)
             d[j].c = j;
         }
         next_code = M_NEW;
-        next_shift = 512;
-        bits = 9;
+        next_shift = 4096;
+        bits = 12;
     };
 
     clear_table();

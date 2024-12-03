@@ -672,6 +672,7 @@ module RocketTile(	// @[generators/rocket-chip/src/main/scala/tile/RocketTile.sc
   wire        _cam_cmd_q_io_deq_valid;	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
   wire [6:0]  _cam_cmd_q_io_deq_bits_inst_funct;	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
   wire [4:0]  _cam_cmd_q_io_deq_bits_inst_rd;	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
+  reg [4:0]  _cam_cmd_q_io_deq_bits_inst_rd_q;	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
   wire [63:0] _cam_cmd_q_io_deq_bits_rs1;	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
   wire [63:0] _cam_cmd_q_io_deq_bits_rs2;	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
   wire        _dcache_auto_out_a_valid;	// @[generators/rocket-chip/src/main/scala/rocket/HellaCache.scala:278:43]
@@ -749,29 +750,15 @@ module RocketTile(	// @[generators/rocket-chip/src/main/scala/tile/RocketTile.sc
   wire [12:0] cam_response;
   wire cam_valid;
   reg         wfiNodeOut_0_REG;	// @[generators/rocket-chip/src/main/scala/tile/Interrupts.scala:131:36]
-  // wire        cam_ = ~cam_busy & _cam_cmd_q_io_deq_valid;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:38:21, :62:16, src/main/scala/chisel3/util/Decoupled.scala:51:35, :362:21]
-  // wire        cam__0 = (|cam_count) | cam_;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:44:22, :51:{15,23}, src/main/scala/chisel3/util/Decoupled.scala:51:35]
-  // wire        cam__1 = cam_count == cam_ecycles;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:44:22, :45:24, :56:15]
-  CAM cam(clock,reset||cam_doRst,_cam_cmd_q_io_deq_valid,_cam_cmd_q_io_deq_bits_rs1,_cam_cmd_q_io_deq_bits_rs2,cam_busy,cam_valid,cam_response);
+  CAM cam(clock,reset||(cam_doRst && _cam_cmd_q_io_deq_valid),_cam_cmd_q_io_deq_valid,_cam_cmd_q_io_deq_bits_rs1,_cam_cmd_q_io_deq_bits_rs2,cam_busy,cam_valid,cam_response);
   always @(posedge clock) begin	// @[generators/rocket-chip/src/main/scala/tile/RocketTile.scala:141:7]
     if (reset) begin	// @[generators/rocket-chip/src/main/scala/tile/RocketTile.scala:141:7]
-      // cam_busy <= 1'h0;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:38:21, generators/rocket-chip/src/main/scala/tile/RocketTile.scala:141:7]
-      // cam_count <= 3'h0;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:44:22]
-      // cam_ecycles <= 3'h0;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:45:24]
       wfiNodeOut_0_REG <= 1'h0;	// @[generators/rocket-chip/src/main/scala/tile/Interrupts.scala:131:36, generators/rocket-chip/src/main/scala/tile/RocketTile.scala:141:7]
     end
     else begin	// @[generators/rocket-chip/src/main/scala/tile/RocketTile.scala:141:7]
-      // cam_busy <= ~cam__1 & (cam__0 | cam_busy);	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:38:21, :51:{23,36}, :53:9, :56:{15,28}, :58:9]
-      // if (cam__1) begin	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:56:15]
-      //   cam_count <= 3'h0;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:44:22]
-      //   cam_ecycles <= 3'h3;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:45:24]
-      // end
-      // else begin	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:56:15]
-      //   if (cam__0)	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:51:23]
-      //     cam_count <= cam_count + 3'h1;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:44:22, :52:20]
-      //   if (cam_ & (cam_doLookupW | _cam_cmd_q_io_deq_bits_inst_funct == 7'h1))	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:34:25, :37:21, :47:{18,32}, src/main/scala/chisel3/util/Decoupled.scala:51:35, :362:21]
-      //     cam_ecycles <= 3'h5;	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:45:24]
-      // end
+      if(_cam_cmd_q_io_deq_valid) begin
+        _cam_cmd_q_io_deq_bits_inst_rd_q <= _cam_cmd_q_io_deq_bits_inst_rd;
+      end
       wfiNodeOut_0_REG <= _core_io_wfi;	// @[generators/rocket-chip/src/main/scala/tile/Interrupts.scala:131:36, generators/rocket-chip/src/main/scala/tile/RocketTile.scala:147:20]
     end
   end // always @(posedge)
@@ -1762,8 +1749,8 @@ module RocketTile(	// @[generators/rocket-chip/src/main/scala/tile/RocketTile.sc
   Queue2_RoCCResponse respArb_io_in_0_q (	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
     .clock            (clock),
     .reset            (reset),
-    .io_enq_valid     (cam_valid & ~cam_busy),	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:38:21, :62:16, :66:30, src/main/scala/chisel3/util/Decoupled.scala:362:21]
-    .io_enq_bits_rd   (_cam_cmd_q_io_deq_bits_inst_rd),	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
+    .io_enq_valid     (cam_valid),	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:38:21, :62:16, :66:30, src/main/scala/chisel3/util/Decoupled.scala:362:21]
+    .io_enq_bits_rd   (_cam_cmd_q_io_deq_bits_inst_rd_q),	// @[src/main/scala/chisel3/util/Decoupled.scala:362:21]
     .io_enq_bits_data ({51'b0,cam_response}),	// @[generators/rocket-chip/src/main/scala/tile/CAMRoCC.scala:34:25, :43:{21,37}, src/main/scala/chisel3/util/Decoupled.scala:362:21]
     .io_deq_ready     (_respArb_io_in_0_ready),	// @[generators/rocket-chip/src/main/scala/tile/LazyRoCC.scala:101:25]
     .io_deq_valid     (_respArb_io_in_0_q_io_deq_valid),
