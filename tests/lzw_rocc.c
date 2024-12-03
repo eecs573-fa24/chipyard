@@ -81,7 +81,6 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
     byte *out = malloc(out_size * sizeof(byte));
     if (!out) {
         fprintf(stderr, "Failed to allocate output buffer\n");
-        // free(d);
         return NULL;
     }
     int out_len_internal = 0, o_bits = 0;
@@ -97,7 +96,6 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
                 out = realloc(out, out_size * sizeof(byte));
                 if (!out) {
                     fprintf(stderr, "Failed to reallocate output buffer\n");
-                    // free(d);
                     exit(1);
                 }
             }
@@ -108,7 +106,6 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
 
     /* Start LZW encoding */
     if (len <= 0) {
-        // free(d);
         free(out);
         return NULL;
     }
@@ -117,8 +114,9 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
 
     while (len--) {
         c = *(in++);
-        printf("Lookup: code: %c, c: %c\n", code, c);
+        printf("Lookup: code: %d, c: %d, %c\n", code, c, c);
         output = CAM_lookup_and_write(code, c);
+        printf("Output:%d\n", output);
 
         if (output == next_code) {  // code+c not in table
             write_bits(code);
@@ -147,14 +145,12 @@ byte* lzw_encode(byte *in, int len, int max_bits, int *out_len)
             out = realloc(out, out_size * sizeof(byte));
             if (!out) {
                 fprintf(stderr, "Failed to reallocate output buffer\n");
-                // free(d);
                 return NULL;
             }
         }
         out[out_len_internal++] = (tmp << (8 - o_bits)) & 0xFF;
     }
 
-    // free(d);
 
     out = realloc(out, out_len_internal * sizeof(byte));
     if (!out) {
@@ -189,7 +185,7 @@ byte* lzw_decode(byte *in, int len, int *out_len)
         out[out_len_internal++] = c;
     }
 
-    int dict_size = 512;
+    int dict_size = 4096;
     lzw_dec_t *d = malloc(dict_size * sizeof(lzw_dec_t));
     if (!d) {
         fprintf(stderr, "Failed to allocate decoding dictionary\n");
@@ -197,7 +193,7 @@ byte* lzw_decode(byte *in, int len, int *out_len)
         return NULL;
     }
 
-    int j, next_shift = 512, bits = 9, n_bits = 0;
+    int j, next_shift = 4096, bits = 12, n_bits = 0;
     ushort code, c, t, next_code = M_NEW;
 
     uint32_t tmp = 0;
@@ -219,7 +215,9 @@ byte* lzw_decode(byte *in, int len, int *out_len)
 
     void clear_table() {
         memset(d, 0, dict_size * sizeof(lzw_dec_t));
-        for (j = 0; j < 256; j++) d[j].c = j;
+        for (j = 0; j < 256; j++){
+            d[j].c = j;
+        }
         next_code = M_NEW;
         next_shift = 512;
         bits = 9;
@@ -310,7 +308,7 @@ int main()
         return 1;
     }
     printf("encoded size: %d\n", enc_len);
-
+    printf("encoded string: %.*s\n", enc_len, enc);
     int dec_len;
     byte *dec = lzw_decode(enc, enc_len, &dec_len);
     if (!dec) {
