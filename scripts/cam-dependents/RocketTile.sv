@@ -48,7 +48,8 @@ module CAM #(
 
     always_comb begin
         lookup_match_d = '0;
-        for(int i = 0; i < depth; i++) begin
+        for(int i = 0; i < size; i++) begin
+            if (i == 256 || i == 257) continue;
             if(data[i] == full_word_q && data_length[i] == lookup_size) begin
                 lookup_match_d[i] = 1'b1;
             end
