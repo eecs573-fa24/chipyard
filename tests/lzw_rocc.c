@@ -289,13 +289,13 @@ byte* lzw_decode(byte *in, int len, int *out_len)
 /* ----------- Main Function -------------- */
 int main()
 {
-    int in_len = strlen("LZW test");
+    int in_len = strlen("LZWLZWLZW");
     byte *in = malloc(in_len * sizeof(byte));
     if (!in) {
         fprintf(stderr, "Failed to allocate input buffer\n");
         return 1;
     }
-    memcpy(in, "LZW test", in_len);
+    memcpy(in, "LZWLZWLZW", in_len);
 
     printf("input: %s\n", in);
     printf("input size:   %d\n", in_len);

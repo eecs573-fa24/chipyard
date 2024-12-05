@@ -32,8 +32,8 @@ module CAM #(
     logic               lookup_found;
 
     logic [logd:0]    size;
-    logic [depth-1:0]   data    [width-1:0];
-    logic [depth-1:0]   data_length  [logw-1:0];
+    logic [width-1:0]   data    [depth-1:0];
+    logic [logw-1:0]   data_length  [depth-1:0];
 
     logic [2:0]         state;
 
@@ -46,16 +46,6 @@ module CAM #(
         data_length[257] = '0;
     end
 
-    always_comb begin
-        lookup_match_d = '0;
-        for(int i = 0; i < size; i++) begin
-            if (i == 256 || i == 257) continue;
-            if(data[i] == full_word_q && data_length[i] == lookup_size) begin
-                lookup_match_d[i] = 1'b1;
-            end
-        end
-    end
-
     assign lookup_found = |lookup_match_q;
 
     always_comb begin
@@ -64,13 +54,6 @@ module CAM #(
             if(lookup_match_q[i]) begin
                 lookup_index = i;
             end
-        end
-    end
-
-    always_comb begin
-        full_word_d = data[code_q];
-        if(data_length[code_q]<width-8) begin
-            full_word_d[data_length[code_q]+:8] = c_q;
         end
     end
 
@@ -95,12 +78,22 @@ module CAM #(
                     end
                 end
                 2'b1: begin
-                    full_word_q <= full_word_d;
+                    full_word_q <= data[code_q];
+                    if(data_length[code_q]<width-8) begin
+                        full_word_q[data_length[code_q]+:8] <= c_q;
+                    end
+
                     lookup_size <= data_length[code_q] + 8;
                     state <= 2'b10;
                 end
                 2'b10: begin
-                    lookup_match_q <= lookup_match_d;
+                    lookup_match_q = '0;
+                    for(int i = 0; i < size; i++) begin
+                        if (i == 256 || i == 257) continue;
+                        if(data[i] == full_word_q && data_length[i] == lookup_size) begin
+                            lookup_match_q[i] = 1'b1;
+                        end
+                    end
                     state <= 2'b11;
                 end
                 2'b11: begin
@@ -128,7 +121,6 @@ module CAM #(
     assign valid_o = valid;
 
 endmodule
-
 
 // Include register initializers in init blocks unless synthesis is set
 `ifndef RANDOMIZE
