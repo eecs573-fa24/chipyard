@@ -295,7 +295,7 @@ int main()
         fprintf(stderr, "Failed to allocate input buffer\n");
         return 1;
     }
-    memcpy(in, "LZW test", in_len);
+    memcpy(in, "LWLWLWLW", in_len);
 
     printf("input: %s\n", in);
     printf("input size:   %d\n", in_len);

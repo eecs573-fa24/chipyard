@@ -27,7 +27,7 @@ module CAM #(
 
     logic [depth-1:0]   lookup_match_d, lookup_match_q;
     logic [width-1:0]     lookup_data;
-    logic [logw-1:0]      lookup_size;
+    logic [logw-3:0]      lookup_size;
     logic [logd-1:0]    lookup_index;
     logic               lookup_found;
 
