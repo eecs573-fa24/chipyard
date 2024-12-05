@@ -32,8 +32,8 @@ module CAM #(
     logic               lookup_found;
 
     logic [logd:0]    size;
-    logic [depth-1:0]   data    [width-1:0];
-    logic [depth-1:0]   data_length  [logw-1:0];
+    logic [width-1:0]   data    [depth-1:0];
+    logic [logw-1:0]   data_length  [depth-1:0];
 
     logic [2:0]         state;
 

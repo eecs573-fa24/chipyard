@@ -274,7 +274,7 @@ int main() {
     print_heap_info();
 
     size_t i;
-	char *input = "LZW319274";
+	char *input = "LZWLZWLZW";
     int in_len = strlen(input);
     byte *in = malloc(in_len * sizeof(byte));
     memcpy(in, input, in_len);
