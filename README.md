@@ -1,3 +1,13 @@
+# EECS 573 Instruction Setup
+Follow usual steps needed to get chipyard setup.<br />
+Source the env.sh file located in the chipyard directory<br />
+Modify the following two file's heap size to 512K or larger depending on the test case you plan to run.
+* Chipyard/.conda-env/riscv-tools/riscv64-unknown-elf/lib/htif.ld
+* Chipyard/toolchains/libgloss/util/htif.ld
+
+Navigate to Chipyard/scripts and run cam-setup.sh
+
+
 ![CHIPYARD](https://github.com/ucb-bar/chipyard/raw/main/docs/_static/images/chipyard-logo-full.png)
 
 # Chipyard Framework [![Test](https://github.com/ucb-bar/chipyard/actions/workflows/chipyard-run-tests.yml/badge.svg)](https://github.com/ucb-bar/chipyard/actions)
