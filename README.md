@@ -1,16 +1,16 @@
 # EECS 573 Instruction Setup
-Follow usual steps needed to get chipyard setup.<br />
-Make sure to be using the default (base) conda enviroment before running ./build-setup.sh<br />
+Clone this repository and follow usual steps needed to get chipyard setup.<br />
 
-When running ./build-setup.sh use the follow arguments: -s 5 -s 6 -s 7 -s 8 -s 9
-* -s 5 is necessary as the CAM module dependencies are added in a later script causing compilation to fail
+When running build-setup.sh, use the arguments ```./build-setup.sh -s 5 -s 6 -s 7 -s 8 -s 9```. Also, make sure you are in the default (base) conda environment before running ```build-setup.sh```.<br />
+* ```-s 5``` is necessary as the CAM module dependencies are added in a later script causing compilation to fail
 
-Source the env.sh file located in the chipyard directory<br />
-Modify the following two file's heap size to 512K or larger depending on the test case you plan to run.
+After ```build-setup.sh``` has finished running, source the ```env.sh``` file located in the chipyard directory.<br />
+
+Modify the following two file's heap size to 512K or larger depending on the test case you plan to run.<br />
 * Chipyard/.conda-env/riscv-tools/riscv64-unknown-elf/lib/htif.ld
 * Chipyard/toolchains/libgloss/util/htif.ld
 
-Navigate to Chipyard/scripts and run cam-setup.sh
+Navigate to ```./chipyard/scripts``` and run ```./cam-setup.sh```.<br />
 
 
 ![CHIPYARD](https://github.com/ucb-bar/chipyard/raw/main/docs/_static/images/chipyard-logo-full.png)
